@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Totally Normal Site</title>
+
+<style>
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: white;
+  text-align: center;
+  overflow: hidden;
+}
+
+#startBtn {
+  font-size: 28px;
+  padding: 25px 50px;
+  margin-top: 40vh;
+  cursor: pointer;
+}
+
+#loadingBarContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background: #333;
+}
+
+#loadingBar {
+  height: 100%;
+  width: 0%;
+  background: lime;
+}
+
+.popup-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,0,0,0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 1000;
+  font-size: 40px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 32px;
+  cursor: pointer;
+  background: black;
+  color: white;
+  padding: 8px 18px;
+  border-radius: 8px;
+}
+
+@keyframes shake {
+  0% { transform: translate(0px,0px); }
+  25% { transform: translate(-15px,8px); }
+  50% { transform: translate(15px,-8px); }
+  75% { transform: translate(-15px,-8px); }
+  100% { transform: translate(0px,0px); }
+}
+
+.shake { animation: shake 0.3s; }
+
+@keyframes flashBg {
+  0% { background: #111; }
+  50% { background: red; }
+  100% { background: #111; }
+}
+
+.flash { animation: flashBg 0.2s infinite; }
+
+#uploadCounter {
+  position: fixed;
+  top: 10px;
+  width: 100%;
+  font-size: 22px;
+}
+</style>
+</head>
+
+<body>
+
+<button id="startBtn">Click Me 😈</button>
+
+<audio id="screamAudio" src="https://www.soundjay.com/human/sounds/scream-01.mp3"></audio>
+
+<script>
+const startBtn = document.getElementById("startBtn");
+const screamAudio = document.getElementById("screamAudio");
+let prankTimerStarted = false;
+
+startBtn.addEventListener("click", () => {
+  startBtn.remove();
+
+  const msg = document.createElement("div");
+  msg.innerText = "Thanks for the IP address 😏";
+  msg.style.fontSize = "36px";
+  msg.style.marginTop = "40vh";
+  document.body.appendChild(msg);
+
+  const barContainer = document.createElement("div");
+  barContainer.id = "loadingBarContainer";
+  const bar = document.createElement("div");
+  bar.id = "loadingBar";
+  barContainer.appendChild(bar);
+  document.body.appendChild(barContainer);
+
+  let width = 0;
+  const interval = setInterval(() => {
+    width += 2;
+    bar.style.width = width + "%";
+    if(width >= 100){
+      clearInterval(interval);
+      msg.remove();
+      barContainer.remove();
+      startChaos();
+    }
+  }, 40);
+});
+
+function startChaos(){
+  document.body.classList.add("flash");
+  createUploadCounter();
+  createPopup();
+  startPrankTimer();
+}
+
+function createUploadCounter(){
+  const counter = document.createElement("div");
+  counter.id = "uploadCounter";
+  counter.innerText = "UPLOADING DATA... 0%";
+  document.body.appendChild(counter);
+
+  let percent = 0;
+  setInterval(()=>{
+    percent += Math.floor(Math.random()*10);
+    if(percent>=100) percent=99;
+    counter.innerText = "UPLOADING DATA... "+percent+"%";
+  },400);
+}
+
+function shakeScreen(){
+  document.body.classList.add("shake");
+  setTimeout(()=>{document.body.classList.remove("shake");},300);
+}
+
+function createPopup(){
+  const popup = document.createElement("div");
+  popup.className = "popup-screen";
+  popup.innerHTML = "YOU CAN’T ESCAPE 😈<div class='close-btn'>X</div>";
+  document.body.appendChild(popup);
+
+  const closeBtn = popup.querySelector(".close-btn");
+  closeBtn.addEventListener("click", ()=>{
+    screamAudio.currentTime = 0;
+    screamAudio.play();
+    shakeScreen();
+    createPopup();
+    popup.remove();
+  });
+}
+
+function startPrankTimer(){
+  if(prankTimerStarted) return;
+  prankTimerStarted = true;
+
+  setTimeout(()=>{
+    document.body.classList.remove("flash");
+    document.querySelectorAll(".popup-screen").forEach(p=>p.remove());
+    const finalScreen = document.createElement("div");
+    finalScreen.className = "popup-screen";
+    finalScreen.style.background = "black";
+    finalScreen.innerHTML = "Just a prank 😂<div class='close-btn'>X</div>";
+    document.body.appendChild(finalScreen);
+    finalScreen.querySelector(".close-btn").addEventListener("click", ()=>finalScreen.remove());
+  },180000);
+}
+</script>
+
+</body>
+</html>
